@@ -6,15 +6,31 @@
 
 Находит скрытые риски · Объясняет сложные пункты · Подсказывает, что исправить
 
-![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![Django](https://img.shields.io/badge/Django-4.2-092E20?logo=django&logoColor=white)
-![aiogram](https://img.shields.io/badge/aiogram-3.x-2CA5E0?logo=telegram&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+[![Telegram Bot](https://img.shields.io/badge/Telegram-%40clause__bot__bot-2CA5E0?logo=telegram&logoColor=white)](https://t.me/clause_bot_bot)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://python.org)
+[![Django](https://img.shields.io/badge/Django-4.2-092E20?logo=django&logoColor=white)](https://djangoproject.com)
+[![aiogram](https://img.shields.io/badge/aiogram-3.x-2CA5E0?logo=telegram&logoColor=white)](https://aiogram.dev)
+[![Docker](https://img.shields.io/badge/Docker-ready-2496ED?logo=docker&logoColor=white)](https://docker.com)
+
+[![Tests](https://img.shields.io/badge/tests-40%20passed-brightgreen)](#-тестирование)
+[![Status](https://img.shields.io/badge/status-production-success)](#-деплой-на-vps)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#-contributing)
 
 [Возможности](#-возможности) · [Архитектура](#-архитектура) · [Быстрый старт](#-быстрый-старт) · [Деплой](#-деплой-на-vps) · [FAQ](#-faq)
 
 </div>
+
+---
+
+## 🔍 Ключевые слова
+
+`Telegram-бот` · `анализ документов` · `юридические документы` · `договор` ·
+`нейросеть` · `искусственный интеллект` · `ИИ-юрист` · `LegalTech` ·
+`Python` · `Django` · `aiogram` · `Claude` · `LLM` · `OCR` ·
+`Robokassa` · `приём платежей` · `СБП` · `ФЗ-54` · `онлайн-касса` ·
+`Docker` · `nginx` · `VPS` · `реферальная программа` ·
+`распознавание речи` · `PDF` · `Word` · `чат-бот`
 
 ---
 
