@@ -1,0 +1,67 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# DocAI — Docker Compose
+#
+# Запуск:   docker compose up -d --build
+# Логи:     docker logs -f DocAI
+# Стоп:     docker compose down
+#
+# Контейнер называется DocAI (container_name ниже).
+# Наружу порт не публикуется: nginx на хосте проксирует на 127.0.0.1:8000.
+# ═══════════════════════════════════════════════════════════════════════════
+
+services:
+  docai:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: docai:latest
+    container_name: DocAI
+    restart: unless-stopped
+
+    # Порт доступен только локально — наружу его отдаёт nginx на хосте
+    ports:
+      - "127.0.0.1:8000:8000"
+
+    env_file:
+      - ../backend/.env
+      - ../bot/.env
+
+    environment:
+      TZ: Europe/Moscow
+      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-}
+      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-}
+      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-}
+
+    volumes:
+      # База данных и логи — хранятся на хосте, переживают пересборку образа
+      - docai_data:/app/data
+      - ../backend/logs:/app/backend/logs
+      - ../backend/db.sqlite3:/app/backend/db.sqlite3
+      # Конфиги монтируем с хоста, чтобы можно было менять без пересборки
+      - ../backend/.env:/app/backend/.env:ro
+      - ../bot/.env:/app/bot/.env:ro
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+    networks:
+      - docai_net
+
+volumes:
+  docai_data:
+    name: docai_data
+
+networks:
+  docai_net:
+    name: docai_net
+    driver: bridge
