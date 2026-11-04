@@ -10,6 +10,38 @@
 # ═══════════════════════════════════════════════════════════════════════════
 
 services:
+  # ═══════════════════════════════════════════════════════════════════════
+  # PostgreSQL — база данных DocAI
+  # ═══════════════════════════════════════════════════════════════════════
+  docai-db:
+    image: postgres:16-alpine
+    container_name: DocAI-DB
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-docai}
+      POSTGRES_USER: ${DB_USER:-docai}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+      PGDATA: /var/lib/postgresql/data/pgdata
+      TZ: Europe/Moscow
+    volumes:
+      - docai_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-docai} -d ${DB_NAME:-docai}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - docai_net
+
+  # ═══════════════════════════════════════════════════════════════════════
+  # DocAI — backend + bot
+  # ═══════════════════════════════════════════════════════════════════════
   docai:
     build:
       context: ..
@@ -17,6 +49,9 @@ services:
     image: docai:latest
     container_name: DocAI
     restart: unless-stopped
+    depends_on:
+      docai-db:
+        condition: service_healthy
 
     # Порт доступен только локально — наружу его отдаёт nginx на хосте
     ports:
@@ -28,15 +63,17 @@ services:
 
     environment:
       TZ: Europe/Moscow
-      DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME:-}
-      DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD:-}
-      DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL:-}
+      # Параметры подключения к PostgreSQL
+      DB_ENGINE: postgresql
+      DB_NAME: ${DB_NAME:-docai}
+      DB_USER: ${DB_USER:-docai}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
+      DB_HOST: docai-db
+      DB_PORT: "5432"
 
     volumes:
-      # База данных и логи — хранятся на хосте, переживают пересборку образа
       - docai_data:/app/data
       - ../backend/logs:/app/backend/logs
-      - ../backend/db.sqlite3:/app/backend/db.sqlite3
       # Конфиги монтируем с хоста, чтобы можно было менять без пересборки
       - ../backend/.env:/app/backend/.env:ro
       - ../bot/.env:/app/bot/.env:ro
@@ -60,6 +97,8 @@ services:
 volumes:
   docai_data:
     name: docai_data
+  docai_pgdata:
+    name: docai_pgdata
 
 networks:
   docai_net:
